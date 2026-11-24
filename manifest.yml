@@ -1,0 +1,82 @@
+modules:
+  rovo:mcp:
+    - key: backlog-triage-mcp
+      name: Backlog Triage MCP
+      tools:
+        - triage-backlog
+        - get-issue-context
+        - draft-triage-summary
+  action:
+    - key: triage-backlog
+      name: Triage backlog
+      function: triageBacklogFn
+      actionVerb: GET
+      description: >
+        Ranks the open issues of a Jira project by triage urgency.
+        Flags stale issues, unassigned issues, and issues missing a
+        description or priority, so an agent can tell a team exactly
+        which backlog items need attention first.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: The Jira project key, for example PROJ.
+        maxResults:
+          title: Maximum results
+          type: number
+          required: false
+          description: How many ranked issues to return (default 25, max 50).
+    - key: get-issue-context
+      name: Get issue context
+      function: getIssueContextFn
+      actionVerb: GET
+      description: >
+        Fetches one Jira issue's summary, status, assignee, priority,
+        labels, last update, comment count, and linked issues, so an
+        agent can answer questions about it with real context instead
+        of guessing.
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+          description: The Jira issue key, for example PROJ-123.
+    - key: draft-triage-summary
+      name: Draft triage summary
+      function: draftTriageSummaryFn
+      actionVerb: GET
+      description: >
+        Builds a short Markdown triage brief for a Jira project:
+        needs-an-owner, gone-stale, and unclear groups, each with the
+        top issues and a suggested next action. Deterministic output,
+        no LLM call.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: The Jira project key, for example PROJ.
+  function:
+    - key: triageBacklogFn
+      handler: index.triageBacklog
+    - key: getIssueContextFn
+      handler: index.getIssueContext
+    - key: draftTriageSummaryFn
+      handler: index.draftTriageSummary
+permissions:
+  scopes:
+    - read:jira-work
+    - read:jira-user
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+  # TODO (Fase 2, langkah IDR): ganti app id placeholder di bawah dengan
+  # id asli dari `forge register` setelah `forge login` dengan akun
+  # Atlassian IDR. Jangan commit app id asli orang lain; id ini milik
+  # aplikasi ini dan dibuat saat register.
+  id: ari:cloud:ecosystem::app/00000000-0000-0000-0000-000000000000
+  name: backlog-triage-mcp
+  licensing:
+    enabled: false

@@ -1,0 +1,1 @@
+{"dependencies":{"@forge/api":"^8.5.1"},"description":"Forge app exposing Jira backlog-triage tools via the Atlassian MCP server (rovo:mcp). Codegeist 2026.","license":"MIT","main":"src/index.js","name":"backlog-triage-mcp","private":true,"scripts":{"test":"node --test test/triage.test.js"},"version":"0.1.0"}
